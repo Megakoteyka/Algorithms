@@ -44,6 +44,7 @@
 #include <stdio.h>
 #include <conio.h>
 #include <locale.h>
+#include <math.h>
 
 
 #define MENU_SIZE	15	// количество пунктов в меню
@@ -285,9 +286,6 @@ int isValidCheckmatePoint(Point pt) { return pt.x >= 1 && pt.x <= 8 && pt.y >= 1
 void Ex7()
 {
 	Point pt1, pt2;
-
-	int v;
-	char h;
 
 	printf("Сперва вводится координата по горизонтали (1..8), а затем координата по вертикали (1..8)\n");
 
