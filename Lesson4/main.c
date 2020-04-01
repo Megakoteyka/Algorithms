@@ -149,9 +149,9 @@ int main(int argc, char** argv)
 	setlocale(LC_ALL, "Russian");
 
 	MenuItem menu[MENU_SIZE] = {
-		{ Ex1, "Индекс массы тела" },
-		{ Ex2, "Максимум из четырех чисел" },
-		{ Ex3, "Обмен значениями переменных" },
+		{ Ex1, "Маршруты с препятствиями" },
+		{ Ex2, "Длина максимальной последовательности" },
+		{ Ex3, "Обход шахматной доски конем" },
 		{ 0, "Выход" }
 	};
 
@@ -167,15 +167,16 @@ int main(int argc, char** argv)
 		if (scanf_s("%d", &selectedIndex) != 1)
 			continue;
 
-		// 1..15 -> 0..14
 		selectedIndex--;
-
 		if (selectedIndex >= 0 && selectedIndex < MENU_SIZE)
 		{
 			currentItem = menu[selectedIndex];
 			if (currentItem.func == 0)
 				return 0;
 
+			system("cls");
+			printf("%s\n\n", currentItem.text);
+			
 			currentItem.func();
 
 			printf("\n\nНажмите любую клавишу для продолжения");
