@@ -29,7 +29,7 @@
 #include <locale.h>
 #include <string.h>
 
-#define MENU_SIZE 2
+#define MENU_SIZE 3
 
 // структура для организации меню
 typedef struct MENU_ITEM_T
@@ -77,8 +77,8 @@ void Ex1()
 	scanf_s("%d", &value);
 
 	Stack s;
-	int buf[20];
-	stackInit(&s, buf, 20);
+	int buf[64];
+	stackInit(&s, buf, 64);
 
 	while (value)
 	{
@@ -92,6 +92,43 @@ void Ex1()
 		printf("%d", stackPop(&s));
 }
 
+int isOpenBrace(char c) { return c == '(' || c == '[' || c == '{'; }
+int isCloseBrace(char c) { return c == ')' || c == ']' || c == '}'; }
+int isBrace(char c) { return isOpenBrace(c) || isCloseBrace(c); }
+int isCorrectBraces(char c1, char c2) { return (c1 == '(' && c2 == ')') || (c1 == '[' && c2 == ']') || (c1 == '{' && c2 == '}'); }
+
+void Ex2()
+{
+	printf("Введите последовательность из скобок: ");
+
+	char str[64];
+	scanf_s("%s", str, 63);
+
+	Stack s;
+	int buf[32];
+	stackInit(&s, buf, 32);
+
+	char* tmpStr = str;
+	for (; *tmpStr; tmpStr++)
+	{
+		if (!isBrace(*tmpStr))
+			continue;
+
+		if (isOpenBrace(*tmpStr))
+			stackPush(&s, *tmpStr);
+		else if (isCloseBrace(*tmpStr))
+			if (s.count == 0 || !isCorrectBraces(stackPop(&s), *tmpStr))
+				break;
+
+	}
+
+	// если не дошли до конца строки - то в строке были ошибки
+	if (*tmpStr)
+		printf("Последовательность скобок СОДЕРЖИТ ОШИБКИ\n");
+	else
+		printf("Последовательность скобок ПРАВИЛЬНАЯ\n");
+}
+
 int main(int argc, char** argv)
 {
 	int selectedIndex;
@@ -101,7 +138,7 @@ int main(int argc, char** argv)
 
 	MenuItem menu[MENU_SIZE] = {
 		{ Ex1, "Перевод числа из десятичное формы в двоичную с помощью стека" },
-		//{ Ex2, "Длина максимальной последовательности" },
+		{ Ex2, "Правильность скобочной последовательности" },
 		//{ Ex3, "Обход шахматной доски конем" },
 		{ 0, "Выход" }
 	};
