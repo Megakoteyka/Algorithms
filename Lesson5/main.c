@@ -6,22 +6,19 @@
 
 //1. Реализовать перевод из десятичной в двоичную систему счисления с использованием стека.
 
-//2. Написать программу, которая определяет, является ли введенная скобочная
-//последовательность правильной.Примеры правильных скобочных выражений : (), ([])(), {}(),
-//([{}]), неправильных — )(, ())({ ), (, ]) }), ([(]) для скобок[, (, { .
-//Например: (2 + (2 * 2)) или[2 / {5 * (4 + 7)}].
+//2. Добавить в программу «реализация стека на основе односвязного списка» проверку на выделение памяти.
+//Если память не выделяется, то выводится соответствующее сообщение. Постарайтесь создать ситуацию, когда
+//память не будет выделяться(добавлением большого количества данных).
 
-//3. * Создать функцию, копирующую односвязный список(то есть создающую в памяти копию
-//односвязного списка без удаления первого списка).
+//3. Написать программу, которая определяет, является ли введенная скобочная последовательность правильной.
+//Примеры правильных скобочных выражений : (), ([])(), {}(), ([{}]), неправильных — )(, ())({ ), (, ]) }), ([(]) для скобок[, (, { .
+//Например: (2 + (2 * 2)) или[2 / {5 * (4 + 7)}]
 
-//4. * Реализовать алгоритм перевода из инфиксной записи арифметического выражения в
-//постфиксную.
+//4. * Создать функцию, копирующую односвязный список(то есть создает в памяти копию односвязного списка, не удаляя первый список).
 
-//5. Реализовать очередь :
-//	1. С использованием массива.
-//	2. * С использованием односвязного списка.
+//5. * *Реализовать алгоритм перевода из инфиксной записи арифметического выражения в постфиксную.
 
-//6. * **Реализовать двустороннюю очередь.
+//6. * Реализовать очередь.
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -38,6 +35,7 @@ typedef struct MENU_ITEM_T
 	char* text;
 } MenuItem;
 
+// стек на основе массива
 typedef struct STACK_T
 {
 	int* buffer;
@@ -45,6 +43,21 @@ typedef struct STACK_T
 	int count;
 } Stack;
 
+// узел связного списка
+typedef struct NODE_T
+{
+	int value;
+	struct NODE_T* next;
+} Node;
+
+// стек на основе списка
+typedef struct LINKED_STACK_T
+{
+	Node* head;
+	int count;
+} LinkedStack;
+
+// стек на основе массива: инициализация
 void stackInit(Stack* stack, int* buffer, int size)
 {
 	stack->buffer = buffer;
@@ -52,6 +65,7 @@ void stackInit(Stack* stack, int* buffer, int size)
 	stack->count = 0;
 }
 
+// стек на основе массива: добавление
 void stackPush(Stack* s, int data)
 {
 	if (s->count == s->size)
@@ -60,6 +74,7 @@ void stackPush(Stack* s, int data)
 	s->buffer[s->count++] = data;	
 }
 
+// стек на основе массива: удаление
 int stackPop(Stack* s)
 {
 	if (s->count == 0)
@@ -69,12 +84,50 @@ int stackPop(Stack* s)
 	return s->buffer[s->count];
 }
 
+// стек на основе списка: инициализация
+void linkedStackInit(LinkedStack* stack)
+{
+	stack->head = NULL;
+	stack->count = 0;
+}
+// стек на основе списка: добавление
+void linkedStackPush(LinkedStack* stack, int value)
+{
+	Node* node = (Node*)malloc(sizeof(Node));
+	if (node == NULL)
+		exit(ENOMEM);
+
+	node->value = value;
+	node->next = stack->head;
+
+	stack->head = node;
+	stack->count++;
+}
+
+// стек на основе списка: удаление
+int linkedStackPop(LinkedStack* stack)
+{
+	if (stack->count == 0)
+		exit(-1);// не нашел подходящий код ошибки, пускай будет -1
+
+	Node* tmp = stack->head;
+
+	stack->head = stack->head->next;
+	stack->count--;
+
+	int value = tmp->value;
+	free(tmp);
+	return value;
+}
+
+
 void Ex1()
 {
 	printf("Введите десятичное число: ");
 	int value;
 
 	scanf_s("%d", &value);
+	int value2 = value;
 
 	Stack s;
 	int buf[64];
@@ -90,6 +143,24 @@ void Ex1()
 
 	while (s.count)
 		printf("%d", stackPop(&s));
+
+	
+	
+	printf("\n\nТеперь то же самое с использоваием стека на основе связного списка.\n");
+	
+	LinkedStack ls;
+	
+	linkedStackInit(&ls);
+	while (value2)
+	{
+		linkedStackPush(&ls, value2 & 1);
+		value2 >>= 1;
+	}
+	
+	printf("Двоичное представление: ");
+
+	while (ls.count)
+		printf("%d", linkedStackPop(&ls));
 }
 
 int isOpenBrace(char c) { return c == '(' || c == '[' || c == '{'; }
@@ -137,9 +208,8 @@ int main(int argc, char** argv)
 	setlocale(LC_ALL, "Russian");
 
 	MenuItem menu[MENU_SIZE] = {
-		{ Ex1, "Перевод числа из десятичное формы в двоичную с помощью стека" },
+		{ Ex1, "Перевод числа из десятичной формы в двоичную с помощью стека (на основе массива и связного списка)" },
 		{ Ex2, "Правильность скобочной последовательности" },
-		//{ Ex3, "Обход шахматной доски конем" },
 		{ 0, "Выход" }
 	};
 
